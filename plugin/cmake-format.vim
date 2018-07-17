@@ -39,10 +39,9 @@ endfunction
 function! s:error_message(result) abort
 	echohl ErrorMsg
 	echomsg 'cmake_format has failed to format.'
-	for l in split(a:result, "\n")[0:1]
-		echomsg l
-	endfor
-	echomsg ''
+"  	for l in split(a:result, "\n")[0:1]
+"  		echomsg l
+"  	endfor
 	echomsg ''
 	echohl None
 endfunction
@@ -55,8 +54,9 @@ function! s:cmake_format(current_args)
 	if a:current_args != ''
 		let l:cmake_format_opts = a:current_args
 	endif
-	let l:source = join(getline(1, '$'), "\n")
-	let l:cmake_format_output = system(l:cmake_format_cmd . ' ' . l:cmake_format_opts, l:source)
+	let tempfilepath=tempname()
+	call writefile(getline(1, '$'), tempfilepath)
+	let l:cmake_format_output = system(l:cmake_format_cmd . ' ' . l:cmake_format_opts . ' ' . tempfilepath)
 	if s:success(l:cmake_format_output)
 		let l:view = winsaveview()
 		" NOTE: VISUAL BLOCKの機能でregが上書きされてしまうので，
