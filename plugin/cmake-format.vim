@@ -39,9 +39,6 @@ endfunction
 function! s:error_message(result) abort
 	echohl ErrorMsg
 	echomsg 'cmake_format has failed to format.'
-"  	for l in split(a:result, "\n")[0:1]
-"  		echomsg l
-"  	endfor
 	echomsg ''
 	echohl None
 endfunction
