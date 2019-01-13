@@ -55,15 +55,16 @@ function! s:cmake_format(current_args)
 	call writefile(getline(1, '$'), tempfilepath)
 	let l:cmake_format_output = system(l:cmake_format_cmd . ' ' . l:cmake_format_opts . ' ' . tempfilepath)
 	if s:success(l:cmake_format_output)
-		let l:view = winsaveview()
-		" NOTE: VISUAL BLOCKの機能でregが上書きされてしまうので，
-		" もとに戻す処理を追加したが，不完全
-		let tmp=@+
-		call setreg('g', l:cmake_format_output, 'V')
-		silent keepjumps normal! gg0VG"gp
-		let @+=tmp
-		let @"=tmp
-		silent call winrestview(l:view)
+		let pos_save = a:0 >= 1 ? a:1 : getpos('.')
+		let winview = winsaveview()
+		let splitted = split(l:cmake_format_output, '\n')
+		silent! undojoin
+		if line('$') > len(splitted)
+			execute len(splitted) .',$delete' '_'
+		endif
+		call setline(1, splitted)
+		call winrestview(winview)
+		call setpos('.', pos_save)
 	else
 		call s:error_message(l:cmake_format_output)
 	endif
